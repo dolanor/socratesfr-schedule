@@ -114,7 +114,12 @@ func parseEvents(tokens []string, day time.Time, rooms []string) ([]*components.
 		m = 0
 	}
 
-	start := time.Date(day.Year(), day.Month(), day.Day(), h, m, 0, 0, time.Local)
+	tz, err := time.LoadLocation("Europe/Paris")
+	if err != nil {
+		panic(err)
+	}
+
+	start := time.Date(day.Year(), day.Month(), day.Day(), h, m, 0, 0, tz)
 	if len(timesStrs) == 2 {
 		hm = strings.Split(timesStrs[1], "h")
 		h, err = strconv.Atoi(hm[0])
@@ -131,7 +136,7 @@ func parseEvents(tokens []string, day time.Time, rooms []string) ([]*components.
 			m = 0
 		}
 	}
-	end := time.Date(day.Year(), day.Month(), day.Day(), h, m, 0, 0, time.Local)
+	end := time.Date(day.Year(), day.Month(), day.Day(), h, m, 0, 0, tz)
 
 	var events []*components.Event
 	// We ignore the first columns which is time and has been parsed already
@@ -150,7 +155,7 @@ func parseEvents(tokens []string, day time.Time, rooms []string) ([]*components.
 		// We re-join in case some " - " string has been put in the session description
 		title := facilitatorTitle[0]
 
-		event := components.NewEventWithEnd(uid.String(), start.In(time.UTC), end.In(time.UTC))
+		event := components.NewEventWithEnd(uid.String(), start, end)
 		event.Summary = title
 		event.Organizer = &values.OrganizerContact{Entry: mail.Address{Name: facilitator, Address: fmt.Sprintf("%s@socratesfr2019.fr", strings.ReplaceAll(facilitator, " ", "."))}}
 
