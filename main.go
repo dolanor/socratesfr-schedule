@@ -60,7 +60,9 @@ func main() {
 		tokens := strings.Split(r.Text(), "|")
 		// Let's save the room
 		if lineNb == 1 {
-			rooms = tokens[2:]
+			for _, v := range tokens[2:] {
+				rooms = append(rooms, strings.TrimSpace(v))
+			}
 			continue
 		}
 		//if lineNb > max {
