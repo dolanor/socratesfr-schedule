@@ -105,10 +105,13 @@ func parseEvents(tokens []string, day time.Time, rooms []string) ([]*components.
 		panic(err)
 	}
 
-	if len(hm) > 2 {
-		m, err = strconv.Atoi(strings.TrimSpace(hm[1]))
-		if err != nil {
-			panic(err)
+	if len(hm) > 1 {
+		mstr := strings.TrimSpace(hm[1])
+		if mstr != "" {
+			m, err = strconv.Atoi(mstr)
+			if err != nil {
+				panic(err)
+			}
 		}
 	} else {
 		m = 0
@@ -127,10 +130,13 @@ func parseEvents(tokens []string, day time.Time, rooms []string) ([]*components.
 			panic(err)
 		}
 
-		if len(hm) > 2 {
-			m, err = strconv.Atoi(hm[1])
-			if err != nil {
-				panic(err)
+		if len(hm) > 1 {
+			mstr := strings.TrimSpace(hm[1])
+			if mstr != "" {
+				m, err = strconv.Atoi(mstr)
+				if err != nil {
+					panic(err)
+				}
 			}
 		} else {
 			m = 0
