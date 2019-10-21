@@ -157,9 +157,9 @@ func parseEvents(tokens []string, day time.Time, rooms []string) ([]*components.
 			fmt.Println(facilitatorTitle)
 			return nil, errors.New("wrong session format (is it Author Name - Text for so-called session?)")
 		}
-		facilitator := facilitatorTitle[1]
+		facilitator := strings.TrimSpace(facilitatorTitle[1])
 		// We re-join in case some " - " string has been put in the session description
-		title := facilitatorTitle[0]
+		title := strings.TrimSpace(facilitatorTitle[0])
 
 		event := components.NewEventWithEnd(uid.String(), start, end)
 		event.Summary = title
