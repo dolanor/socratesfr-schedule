@@ -19,6 +19,14 @@ import (
 	"github.com/rs/xid"
 )
 
+func mustParseURL(urlstr string) *url.URL {
+	u, err := url.Parse(urlstr)
+	if err != nil {
+		panic(err)
+	}
+	return u
+}
+
 var (
 	mdSchedule = `What ?         | Timeslot    | Bastide 1                              | Bastide 2                                                   | Bastide Mob                                               | Bibliothèque (across yard left)                              | Cheminée (across yard right)                              | Marquis (right of yard)                             | Somewhere else                   | Somewhere else 
 --             | --          | --                                     | --                                                          | --                                                        | --                                                           | --                                                        | --                                                  | --                               | --         
@@ -34,6 +42,15 @@ Retro          | 18h - 18h30 | Retro - Romeu et al.                   |         
 Slack time     | 18h30 - 20h |                                        | Lightning talks - Niklaas                                   | Mob gaming - Arthur                                       | Factorio / TOC / Video gaming - Chris                        | OCaml discovery - NSA                                     | Take decisions as a group - Jhalil & Vincent        | Wine tasting (19h15) - Jerome    | Error-driven development brainstorm - ToF 
 Dinner         | 20h - 22h   |                                        | Let's define lazy developer - Nicolas                       |                                                           |                                                              |                                                           |                                                     |                                  | Teach TDD to people - Romeu - Lunch
 Night sessions | 22h - 23h59 |                                        |                                                             |                                                           | Overcooked 2 - Juke                                          |                                                           |                                                     | Whiskey strikes back - Christian | Board games & RPG - Arthuer - Lobby`
+	locURL = map[string][]*url.URL{
+		"Bastide 1":                       {mustParseURL("https://www.openstreetmap.org/way/736667138"), mustParseURL("geo:44.23264,4.79316")},
+		"Bastide 2":                       {mustParseURL("https://www.openstreetmap.org/way/736667140"), mustParseURL("geo:44.23256,4.79299")},
+		"Bastide Mob":                     {mustParseURL("https://www.openstreetmap.org/way/736667139"), mustParseURL("geo:44.23272,4.79321")},
+		"Bibliothèque (across yard left)": {mustParseURL("https://www.openstreetmap.org/way/736667136"), mustParseURL("geo:44.23284,4.7928")},
+		"Cheminée (across yard right)":    {mustParseURL("https://www.openstreetmap.org/way/736667137"), mustParseURL("geo:44.23279,4.79278")},
+		"Marquis (right of yard)":         {mustParseURL("https://www.openstreetmap.org/way/736667135"), mustParseURL("geo:44.23281,4.79307")},
+		"Somewhere else":                  {mustParseURL("https://www.openstreetmap.org/changeset/75916932")},
+	}
 )
 
 func main() {
@@ -165,10 +182,10 @@ func parseEvents(tokens []string, day time.Time, rooms []string) ([]*components.
 		event.Summary = title
 		event.Organizer = &values.OrganizerContact{Entry: mail.Address{Name: facilitator, Address: fmt.Sprintf("%s@socratesfr2019.fr", strings.ReplaceAll(facilitator, " ", "."))}}
 
-		locurls := []*url.URL{}
+		locurls := locURL[rooms[col]]
 		_ = locurls
 
-		event.Location = values.NewLocation(rooms[col])
+		event.Location = values.NewLocation(rooms[col], locurls...)
 		color.Red("%v\n", *event.Location)
 
 		event.Attendees = []*values.AttendeeContact{&values.AttendeeContact{Entry: event.Organizer.Entry}}
